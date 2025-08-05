@@ -1,0 +1,39 @@
+plugins {
+  id 'com.ymsl.solid.build.framework-application'
+} 
+
+ext {
+    appMainClass = "jp.co.yamaha_motor.gimac.xx.batch.BatchApplication"
+}
+
+dependencies {
+    implementation "com.ymsl.solid:solid-jpa"
+
+    implementation "org.springframework.boot:spring-boot-starter-batch"
+
+    implementation "com.h2database:h2"
+    implementation "org.postgresql:postgresql"
+
+    implementation "jp.co.yamaha_motor.gimac.tools:gimac-common:1.0.10-COMMON-SNAPSHOT"
+    implementation "jp.co.yamaha_motor.gimac.tools:gimac-common-batch:1.0.10-COMMON-SNAPSHOT"
+
+    // For single datasource
+    //No Jta use Hikari as the default connection pool.
+    compileOnly("com.zaxxer:HikariCP") {
+        exclude group: "org.slf4j", module: "slf4j-api"
+    }
+    compileOnly "jakarta.transaction:jakarta.transaction-api"
+	
+    // Testing dependencies
+    testImplementation "com.ymsl.solid:solid-test"
+    //testCompile "org.flywaydb:flyway-core"
+	testImplementation 'org.junit.platform:junit-platform-launcher'
+    testImplementation "org.springframework.batch:spring-batch-test"
+    
+    
+    //implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.10.0'
+}
+
+springBoot {
+    mainClass = appMainClass
+}

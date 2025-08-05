@@ -1,0 +1,90 @@
+spring:
+  application:
+    name: batch-sample
+  batch:
+    jdbc:
+      initialize-schema: always
+    job:
+      enabled: true
+
+app:
+  properties:
+    site-cd: "xxx" # ${SITE_CD} この「${～}」の記述に変更して、環境変数参照にできる。
+
+## Default jpa config
+spring.jpa:
+  open-in-view: false
+  show-sql: false
+  properties:
+    hibernate:
+      hbm2ddl.auto: none
+    jadira:
+      usertype:
+        useJdbc42Apis: true
+
+spring.profiles.group:
+  development:
+    - psql-test
+    - logback-file
+
+  production:
+#    - h2
+    - logback-console
+
+---
+spring.config.activate.on-profile: h2
+
+spring.jpa:
+  generate-ddl: true
+  hibernate:
+    ddl-auto: update
+
+spring.datasource:
+  url: jdbc:h2:mem:demo_master;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+  driverClassName: org.h2.Driver
+  username: sa
+  password:
+  xa:
+    dataSourceClassName: org.h2.jdbcx.JdbcDataSource
+
+spring.sql.init:
+  schema-locations: classpath*:db/schema.sql
+---
+spring.config.activate.on-profile: psql-test
+
+spring.jpa:
+    database: POSTGRESQL
+    database-platform: org.hibernate.dialect.PostgreSQLDialect  
+    properties:
+      hibernate.temp.use_jdbc_metadata_defaults: false
+
+spring.datasource:
+    url: ${DB_URL}
+    driverClassName: org.postgresql.Driver
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    xa:
+        dataSourceClassName: org.postgresql.xa.PGXADataSource
+        
+---
+spring.config.activate.on-profile: production
+
+spring.jpa:
+  database: POSTGRESQL
+  database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+spring.datasource:
+  url: ${DB_URL}
+  driverClassName: org.postgresql.Driver
+  username: ${DB_USERNAME}
+  password: ${DB_PASSWORD}
+  xa:
+    dataSourceClassName: org.postgresql.xa.PGXADataSource
+---
+spring.config.activate.on-profile: logback-file
+logging:
+    config: classpath:logback-file.xml
+---
+spring.config.activate.on-profile: logback-console
+logging:
+    config: classpath:logback-console.xml
